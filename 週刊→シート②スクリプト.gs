@@ -61,6 +61,7 @@ function weekScheduleOutput() {
 
 //サービス文字列⇒列番号変換関数
 function convertServiceToNumber(serviceName) {
+  //サービス名と記載先シート②の列番号を対応させる
   const servicesMapping = {2:"ア_サービス",3:"イ_サービス",4:"ウ_サービス",5:"エ_サービス",6:"オ_サービス"};
 
   for (let key in servicesMapping) {
@@ -157,6 +158,7 @@ function formDataOutput() {
 
 //シート③のサービス文字列⇒列番号変換関数
 function convertServiceToNumberSheet3(serviceName) {
+  //サービス名と記載先シート②の列番号を対応させる
   const servicesMapping = {7:"Aサービス",8:"Bサービス",9:"Cサービス",10:"Dサービス"};
 
   for (let key in servicesMapping) {
