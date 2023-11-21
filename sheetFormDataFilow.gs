@@ -10,7 +10,7 @@ function weekScheduleOutput() {
   const sheet = ss.getSheetByName('シート①(テスト様_週刊計画表)');  
 
   //対応列を記載
-  const numbers = [2,3,4,5,6]
+  const numbers = [2,3,4,5,6];
 
   const range = sheet.getRange("A2:D6");
 
@@ -24,7 +24,7 @@ function weekScheduleOutput() {
     const endTime = value[i][3].toLocaleTimeString('ja-JP');
     const servive = convertServiceToNumber(value[i][0]);
 
-    newValueList.push([servive,value[i][1],startTime,endTime])
+    newValueList.push([servive,value[i][1],startTime,endTime]);
   }
 
   //記載先のシート名を指定
@@ -75,12 +75,12 @@ function getFormData() {
   const responses = form.getResponses();
   const itemResponses = responses[0].getItemResponses();
 
-  const answerList =[]
+  const answerList =[];
 
   for (const itemResponse of itemResponses){
     const answer = itemResponse.getResponse();
 
-    answerList.push(answer)
+    answerList.push(answer);
   }
 
   answerList.shift()
@@ -94,8 +94,8 @@ function getFormData() {
   const lastRow = sheet.getLastRow();
 
   //最終行＋1に記載
-  const setRange = sheet.getRange(lastRow+1,1,1,3)
-  setRange.setValues([answerList])
+  const setRange = sheet.getRange(lastRow+1,1,1,3);
+  setRange.setValues([answerList]);
 }
 
 
@@ -118,7 +118,7 @@ function formDataOutput() {
     //11月のデータのみ取得する(該当月-1)
     if(value[i][1].getMonth()===10.0){
       const service = convertServiceToNumberSheet3(value[i][0]);
-      list.push([service,value[i][1].toLocaleString('ja-JP'),value[i][2].toLocaleTimeString('ja-JP').slice(0,-3)])
+      list.push([service,value[i][1].toLocaleString('ja-JP'),value[i][2].toLocaleTimeString('ja-JP').slice(0,-3)]);
     }
   }
 
@@ -129,7 +129,7 @@ function formDataOutput() {
   const dateValue = dateRange.getValues();
  
   for(let v=0; v<dateValue.length;v++){
-    const strDate = dateValue[v].toLocaleString('ja-JP')
+    const strDate = dateValue[v].toLocaleString('ja-JP');
 
     // 記入元と記入先の日時が一致した場合、そのサービス名の列に記載
     for (let w = 0; w < list.length; w++) {
