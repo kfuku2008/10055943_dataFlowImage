@@ -1,4 +1,5 @@
-function myFunction() {
+//スプレッドシート③をシート②へ記載
+function formDataOutput() {
   //記載元データの取得
   const id = PropertiesService.getScriptProperties().getProperty("SPREADSHEET_ID");
   const ss = SpreadsheetApp.openById(id);
@@ -45,7 +46,7 @@ function myFunction() {
 
 }
 
-//サービス文字列⇒列番号変換関数
+//シート③のサービス文字列⇒列番号変換関数
 function convertServiceToNumberSheet3(serviceName) {
   const servicesMapping = {7:"Aサービス",8:"Bサービス",9:"Cサービス",10:"Dサービス"};
 
