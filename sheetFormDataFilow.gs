@@ -7,10 +7,7 @@ function weekScheduleOutput() {
   const ss = SpreadsheetApp.openById(id);
 
   //記入元のシート名を指定
-  const sheet = ss.getSheetByName('シート①(テスト様_週刊計画表)');
-
-  //サービス名とマップリストを作成
-  
+  const sheet = ss.getSheetByName('シート①(テスト様_週刊計画表)');  
 
   //対応列を記載
   const numbers = [2,3,4,5,6]
