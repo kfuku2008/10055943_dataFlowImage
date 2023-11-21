@@ -24,7 +24,6 @@ function weekScheduleOutput() {
     const endTime = value[i][3].toLocaleTimeString('ja-JP');
     const servive = convertServiceToNumber(value[i][0]);
 
-    //サービス
     newValueList.push([servive,value[i][1],startTime,endTime])
   }
 
@@ -33,9 +32,6 @@ function weekScheduleOutput() {
 
   const outpuRange = outputSheet.getRange("A2:F31");
   const outputValue = outpuRange.getValues();
-
-  //Logger.log(outputValue)
-
   
   for(let v=0; v<outputValue.length;v++){
 
@@ -43,7 +39,6 @@ function weekScheduleOutput() {
     const day = outputValue[v][0].getDay();
     const dayList = ['日','月','火','水','木','金','土'];
     const dayString = dayList[day]+'曜日';
-    //Logger.log(dayString);
 
     // 記入先に曜日の行とサービス名A~Dの列があり、記入元の曜日が一致した場合、曜日の行・サービス名の列に●を記載
     for (let w = 0; w < newValueList.length; w++) {
@@ -66,7 +61,6 @@ function convertServiceToNumber(serviceName) {
       return key;
     }
   }
-
   // 該当するサービスが見つからなかった場合の処理
   return null;
 }
@@ -118,7 +112,6 @@ function formDataOutput() {
   const range = sheet.getRange("A2:C5");
   const value = range.getValues();
 
-  //Logger.log(value)
   const list = []
 
   for(let i=0; i<value.length; i++){
@@ -129,17 +122,12 @@ function formDataOutput() {
     }
   }
 
-  //Logger.log(list[0][1])
-
   //記載先のシート名を指定
   const outputSheet = ss.getSheetByName("シート②(テスト様_11月)");
 
   const dateRange = outputSheet.getRange("A2:A31");
   const dateValue = dateRange.getValues();
-
-  //Logger.log(dateValue[9]===list[0][1])
-
-  
+ 
   for(let v=0; v<dateValue.length;v++){
     const strDate = dateValue[v].toLocaleString('ja-JP')
 
