@@ -3,9 +3,6 @@
 //シート名に付与する翌月の値(グローバル変数として使用)
 const targetName = `${nextYearMonth_().year}年${nextYearMonth_().month}月`;
 
-//算出時間の記入時に使用
-//const targetPeriod = `_${nextYearMonth_().year}年${nextYearMonth_().month}月_`
-
 //実績票シート呼び出し変数
 const jissekiGenponSheetNameList = ["居宅介護実績票","重度訪問介護実績票","行動援護実績票","同行支援実績票","行動支援実績票"];
 
@@ -26,29 +23,6 @@ const formKyotakuJudoId = PropertiesService.getScriptProperties().getProperty('F
 
 //GoogleフォームのID（行動援護・同行支援・行動支援）
 const formKodoId = PropertiesService.getScriptProperties().getProperty('FORM_KODO_ID');
-
-
-// //一覧表(居宅介護・重度訪問)のスプシID
-// const ichiranhyouDokoShien = PropertiesService.getScriptProperties().getProperty('ICHIRANHYOU_KODO');
-
-// //スクリプトプロパティからスプシIDを呼び出す
-// //一覧表(居宅介護・重度訪問)のスプシID
-// const ichiranhyouJudo = PropertiesService.getScriptProperties().getProperty('ICHIRANHYOU_KYOTAKUJUDO');
-
-
-
-// //スクリプトプロパティからスプシIDを呼び出す
-// //一覧表(居宅介護・重度訪問)のスプシID
-// const ichiranhyouKodoshien = PropertiesService.getScriptProperties().getProperty('ICHIRANHYOU_KODO');
-
-// //スクリプトプロパティからスプシIDを呼び出す
-// //一覧表(居宅介護・重度訪問)のスプシID
-// const ichiranhyouKodoengo = PropertiesService.getScriptProperties().getProperty('ICHIRANHYOU_KODO');
-
-// //スクリプトプロパティからスプシIDを呼び出す
-// //一覧表(居宅介護・重度訪問)のスプシID
-// const ichiranhyouKyotaku = PropertiesService.getScriptProperties().getProperty('ICHIRANHYOU_KYOTAKUJUDO');
-
 
 
 //========================================
@@ -139,7 +113,6 @@ function outputData(){
         outputList.push([])
       }
     }
-
     // ここで実績票に書き込み  
     // 自動作成したスプレッドシートへ記載する
     // 別途作成したシートに書き出す
@@ -179,7 +152,7 @@ function outputData(){
               outputSheet.getRange(`L${12+z}`).setValue(outputList[y][z][3]);
               outputSheet.getRange(`O${12+z}`).setValue(outputList[y][z][4]);
             }
-           }
+          }
         }
       }    
     }
@@ -254,15 +227,13 @@ function dbCleaningKyotakuJudo() {
 
   const valueList = []
 
-
   for(let k=1; k<value.length;k++){
     const rowNum = k+1;
     valueList.push([rowNum,value[k][1],value[k][4],value[k][6]])
   }
 
   for (let i = 0; i < valueList.length; i++) {
-    // const currentArray = valueList[i];
-    // let duplicateFound = false;
+
     let beforeRowNum = sheet.getLastRow()
 
     for(let j=i+1;j<valueList.length;j++){
@@ -296,8 +267,7 @@ function dbCleaningKodo() {
   }
 
   for (let i = 0; i < valueList.length; i++) {
-    // const currentArray = valueList[i];
-    // let duplicateFound = false;
+
     let beforeRowNum = sheet.getLastRow()
 
     for(let j=i+1;j<valueList.length;j++){
@@ -329,47 +299,48 @@ function dbCleaningKodo() {
 //★要トリガー設定：居宅介護
 function decisionSheetKyotaku(){
 
-  //ターゲットとなるスプシを指定
-  for (let j=0; j<connectionJissekiSheetKyotaku_().length; j++){
+  if(connectionJissekiSheetKyotaku_().length !==0){
+    //ターゲットとなるスプシを指定
+    for (let j=0; j<connectionJissekiSheetKyotaku_().length; j++){
 
-    //スプシを開く
-    const ss = SpreadsheetApp.openById(connectionJissekiSheetKyotaku_()[j]);
+      //スプシを開く
+      const ss = SpreadsheetApp.openById(connectionJissekiSheetKyotaku_()[j]);
 
-    //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
-    const sheetList = ss.getSheets();
+      //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
+      const sheetList = ss.getSheets();
 
-    //DBから取得したサービス区分を参照
-    for (let k=0;k<inputDbDataKyotaku_().length;k++){
-   
-      //DBのサービス区分に該当するシートを開く
-      for (let i=0; i<sheetList.length;i++){
-        const sheetName = sheetList[i].getName();
-        if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_居宅介護実績票`)){
-          //シート名、サービス日、計画開始時間、サービス開始・終了時間
-          //sheetNameList.push([sheetName,inputDbData_()[k][4],inputDbData_()[k][5],inputDbData_()[k][6],inputDbData_()[k][7]])
-          const sheet = ss.getSheetByName(sheetName);
+      //DBから取得したサービス区分を参照
+      for (let k=0;k<inputDbDataKyotaku_().length;k++){
+    
+        //DBのサービス区分に該当するシートを開く
+        for (let i=0; i<sheetList.length;i++){
+          const sheetName = sheetList[i].getName();
+          if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_居宅介護実績票`)){
+            //シート名、サービス日、計画開始時間、サービス開始・終了時間
+            const sheet = ss.getSheetByName(sheetName);
 
-          //dbのサービス日と計画開始時間を取得
-          const dbServiceDate = inputDbDataKyotaku_()[k][4].getDate()
-          const dbPlanStartTime = `${inputDbDataKyotaku_()[k][6].getHours()},${inputDbDataKyotaku_()[k][6].getMinutes()}`
-          const dbCancelMessage = inputDbDataKyotaku_()[k][46];
+            //dbのサービス日と計画開始時間を取得
+            const dbServiceDate = inputDbDataKyotaku_()[k][4].getDate()
+            const dbPlanStartTime = `${inputDbDataKyotaku_()[k][6].getHours()},${inputDbDataKyotaku_()[k][6].getMinutes()}`
+            const dbCancelMessage = inputDbDataKyotaku_()[k][46];
 
-          const sheetTimes = sheet.getRange("L12:L46").getValues();
-          const sheetDate = sheet.getRange("C12:C46").getValues();
+            const sheetTimes = sheet.getRange("L12:L46").getValues();
+            const sheetDate = sheet.getRange("C12:C46").getValues();
 
-          for(let l=0;l<sheetTimes.length;l++){
-            if(sheetTimes[l][0]!==""){
-              const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
-              if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
-                sheet.getRange(`X${l+12}`).setValue(inputDbDataKyotaku_()[k][5]);
-                sheet.getRange(`AB${l+12}`).setValue(inputDbDataKyotaku_()[k][7]);
-              }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
-                sheet.getRange(`AZ${l+12}`).setValue(inputDbDataKyotaku_()[k][46]);
+            for(let l=0;l<sheetTimes.length;l++){
+              if(sheetTimes[l][0]!==""){
+                const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
+                if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
+                  sheet.getRange(`X${l+12}`).setValue(inputDbDataKyotaku_()[k][5]);
+                  sheet.getRange(`AB${l+12}`).setValue(inputDbDataKyotaku_()[k][7]);
+                }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
+                  sheet.getRange(`AZ${l+12}`).setValue(inputDbDataKyotaku_()[k][46]);
+                }
               }
-            }
-          }          
+            }          
+          }
         }
-     }
+      }
     }
   }
 }
@@ -378,45 +349,46 @@ function decisionSheetKyotaku(){
 //書き込むシートを特定・サービス区分を紐づける
 function decisionSheetJudo(){
 
-  //ターゲットとなるスプシを指定
-  for (let j=0; j<connectionJissekiSheetJudo_().length; j++){
+  if(connectionJissekiSheetJudo_().length !==0){
+    //ターゲットとなるスプシを指定
+    for (let j=0; j<connectionJissekiSheetJudo_().length; j++){
 
-    //スプシを開く
-    const ss = SpreadsheetApp.openById(connectionJissekiSheetJudo_()[j]);
+      //スプシを開く
+      const ss = SpreadsheetApp.openById(connectionJissekiSheetJudo_()[j]);
 
-    //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
-    const sheetList = ss.getSheets();
+      //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
+      const sheetList = ss.getSheets();
 
-    //DBから取得したサービス区分を参照
-    for (let k=0;k<inputDbDataJudo_().length;k++){
-   
-      //DBのサービス区分に該当するシートを開く
-      for (let i=0; i<sheetList.length;i++){
-        const sheetName = sheetList[i].getName();
-        if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_重度訪問介護実績票`)){
-          //シート名、サービス日、計画開始時間、サービス開始・終了時間
-          //sheetNameList.push([sheetName,inputDbData_()[k][4],inputDbData_()[k][5],inputDbData_()[k][6],inputDbData_()[k][7]])
-          const sheet = ss.getSheetByName(sheetName);
+      //DBから取得したサービス区分を参照
+      for (let k=0;k<inputDbDataJudo_().length;k++){
+    
+        //DBのサービス区分に該当するシートを開く
+        for (let i=0; i<sheetList.length;i++){
+          const sheetName = sheetList[i].getName();
+          if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_重度訪問介護実績票`)){
+            //シート名、サービス日、計画開始時間、サービス開始・終了時間
+            const sheet = ss.getSheetByName(sheetName);
 
-          //dbのサービス日と計画開始時間を取得
-          const dbServiceDate = inputDbDataJudo_()[k][4].getDate()
-          const dbPlanStartTime = `${inputDbDataJudo_()[k][6].getHours()},${inputDbDataJudo_()[k][6].getMinutes()}`
-          const dbCancelMessage = inputDbDataJudo_()[k][46];
+            //dbのサービス日と計画開始時間を取得
+            const dbServiceDate = inputDbDataJudo_()[k][4].getDate()
+            const dbPlanStartTime = `${inputDbDataJudo_()[k][6].getHours()},${inputDbDataJudo_()[k][6].getMinutes()}`
+            const dbCancelMessage = inputDbDataJudo_()[k][46];
 
-          const sheetTimes = sheet.getRange("N12:N46").getValues();
-          const sheetDate = sheet.getRange("D12:D46").getValues();
+            const sheetTimes = sheet.getRange("N12:N46").getValues();
+            const sheetDate = sheet.getRange("D12:D46").getValues();
 
-          for(let l=0;l<sheetTimes.length;l++){
-            if(sheetTimes[l][0]!==""){
-              const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
-              if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
-                sheet.getRange(`AB${l+12}`).setValue(inputDbDataJudo_()[k][5]);
-                sheet.getRange(`AF${l+12}`).setValue(inputDbDataJudo_()[k][7]);
-              }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
-                sheet.getRange(`BJ${l+12}`).setValue(inputDbDataJudo_()[k][46]);
+            for(let l=0;l<sheetTimes.length;l++){
+              if(sheetTimes[l][0]!==""){
+                const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
+                if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
+                  sheet.getRange(`AB${l+12}`).setValue(inputDbDataJudo_()[k][5]);
+                  sheet.getRange(`AF${l+12}`).setValue(inputDbDataJudo_()[k][7]);
+                }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
+                  sheet.getRange(`BJ${l+12}`).setValue(inputDbDataJudo_()[k][46]);
+                }
               }
-            }
-          }          
+            }          
+          }
         }
       }
     }
@@ -426,6 +398,7 @@ function decisionSheetJudo(){
 //★要トリガー設定：行動援護
 function decisionSheetKodoengo(){
   //ターゲットとなるスプシを指定
+  if(connectionJissekiSheetKodoengo_().length !==0){
   for (let j=0; j<connectionJissekiSheetKodoengo_().length; j++){
 
     //スプシを開く
@@ -434,81 +407,80 @@ function decisionSheetKodoengo(){
     //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
     const sheetList = ss.getSheets();
 
-    //DBから取得したサービス区分を参照
-    for (let k=0;k<inputDbDataKodoengo_().length;k++){
-   
-      //DBのサービス区分に該当するシートを開く
-      const dbServiceName = inputDbDataKodoengo_()[k][8];
-      //Logger.log(dbServiceName)//重度訪問介護
+        //DBから取得したサービス区分を参照
+        for (let k=0;k<inputDbDataKodoengo_().length;k++){
+      
+          for (let i=0; i<sheetList.length;i++){
+            const sheetName = sheetList[i].getName();
+            if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_行動援護実績票`)){
+              //シート名、サービス日、計画開始時間、サービス開始・終了時間
+              const sheet = ss.getSheetByName(sheetName);
 
-      for (let i=0; i<sheetList.length;i++){
-        const sheetName = sheetList[i].getName();
-        if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_行動援護実績票`)){
-          //シート名、サービス日、計画開始時間、サービス開始・終了時間
-          //sheetNameList.push([sheetName,inputDbData_()[k][4],inputDbData_()[k][5],inputDbData_()[k][6],inputDbData_()[k][7]])
-          const sheet = ss.getSheetByName(sheetName);
+              //dbのサービス日と計画開始時間を取得
+              const dbServiceDate = inputDbDataKodoengo_()[k][4].getDate()
+              const dbPlanStartTime = `${inputDbDataKodoengo_()[k][6].getHours()},${inputDbDataKodoengo_()[k][6].getMinutes()}`
+              const dbCancelMessage = inputDbDataKodoengo_()[k][29];
 
-          //dbのサービス日と計画開始時間を取得
-          const dbServiceDate = inputDbDataKodoengo_()[k][4].getDate()
-          const dbPlanStartTime = `${inputDbDataKodoengo_()[k][6].getHours()},${inputDbDataKodoengo_()[k][6].getMinutes()}`
-          const dbCancelMessage = inputDbDataKodoengo_()[k][29];
+              const sheetTimes = sheet.getRange("H11:H41").getValues();
+              const sheetDate = sheet.getRange("B11:B41").getValues();
 
-          const sheetTimes = sheet.getRange("H11:H41").getValues();
-          const sheetDate = sheet.getRange("B11:B41").getValues();
-
-          for(let l=0;l<sheetTimes.length;l++){
-            if(sheetTimes[l][0]!==""){
-              const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
-              if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
-                sheet.getRange(`T${l+11}`).setValue(inputDbDataKodoengo_()[k][5]);
-                sheet.getRange(`X${l+11}`).setValue(inputDbDataKodoengo_()[k][7]);
-              }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
-                sheet.getRange(`AU${l+11}`).setValue(inputDbDataKodoengo_()[k][29]);
-              }
+              for(let l=0;l<sheetTimes.length;l++){
+                if(sheetTimes[l][0]!==""){
+                  const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
+                  if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
+                    sheet.getRange(`T${l+11}`).setValue(inputDbDataKodoengo_()[k][5]);
+                    sheet.getRange(`X${l+11}`).setValue(inputDbDataKodoengo_()[k][7]);
+                  }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
+                    sheet.getRange(`AU${l+11}`).setValue(inputDbDataKodoengo_()[k][29]);
+                  }
+                }
+              }          
             }
-          }          
+          }
         }
-      }
     }
   }
 }
 
 //★要トリガー設定：同行支援
 function decisionSheetDokoShien(){
-  //ターゲットとなるスプシを指定
-  for (let j=0; j<connectionJissekiSheetDokoShien_().length; j++){
 
-    //スプシを開く
-    const ss = SpreadsheetApp.openById(connectionJissekiSheetDokoShien_()[j]);
+  if(connectionJissekiSheetDokoShien_().length !==0){
 
-    //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
-    const sheetList = ss.getSheets();
+    for (let j=0; j<connectionJissekiSheetDokoShien_().length; j++){
 
-    //DBから取得したサービス区分を参照
-    for (let k=0;k<inputDbDataDokoShien_().length;k++){
-      for (let i=0; i<sheetList.length;i++){
-        const sheetName = sheetList[i].getName();
-        if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_同行支援実績票`)){
-          const sheet = ss.getSheetByName(sheetName);
-          //dbのサービス日と計画開始時間を取得
-          const dbServiceDate = inputDbDataDokoShien_()[k][4].getDate()
-          const dbPlanStartTime = `${inputDbDataDokoShien_()[k][6].getHours()},${inputDbDataDokoShien_()[k][6].getMinutes()}`
-          const dbCancelMessage = inputDbDataDokoShien_()[k][29];
+      //スプシを開く
+      const ss = SpreadsheetApp.openById(connectionJissekiSheetDokoShien_()[j]);
 
-          const sheetTimes = sheet.getRange("H11:H41").getValues();
-          const sheetDate = sheet.getRange("B11:B41").getValues();
+      //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
+      const sheetList = ss.getSheets();
 
-          for(let l=0;l<sheetTimes.length;l++){
-            if(sheetTimes[l][0]!==""){
-              const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
-              if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
-                sheet.getRange(`T${l+11}`).setValue(inputDbDataDokoShien_()[k][5]);
-                sheet.getRange(`X${l+11}`).setValue(inputDbDataDokoShien_()[k][7]);
-              }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
-                sheet.getRange(`AU${l+11}`).setValue(inputDbDataDokoShien_()[k][29]);
+      //DBから取得したサービス区分を参照
+      for (let k=0;k<inputDbDataDokoShien_().length;k++){
+        for (let i=0; i<sheetList.length;i++){
+          const sheetName = sheetList[i].getName();
+          if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_同行支援実績票`)){
+            const sheet = ss.getSheetByName(sheetName);
+            //dbのサービス日と計画開始時間を取得
+            const dbServiceDate = inputDbDataDokoShien_()[k][4].getDate()
+            const dbPlanStartTime = `${inputDbDataDokoShien_()[k][6].getHours()},${inputDbDataDokoShien_()[k][6].getMinutes()}`
+            const dbCancelMessage = inputDbDataDokoShien_()[k][29];
+
+            const sheetTimes = sheet.getRange("H11:H41").getValues();
+            const sheetDate = sheet.getRange("B11:B41").getValues();
+
+            for(let l=0;l<sheetTimes.length;l++){
+              if(sheetTimes[l][0]!==""){
+                const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
+                if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
+                  sheet.getRange(`T${l+11}`).setValue(inputDbDataDokoShien_()[k][5]);
+                  sheet.getRange(`X${l+11}`).setValue(inputDbDataDokoShien_()[k][7]);
+                }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
+                  sheet.getRange(`AU${l+11}`).setValue(inputDbDataDokoShien_()[k][29]);
+                }
               }
-            }
-          }          
+            }          
+          }
         }
       }
     }
@@ -517,48 +489,46 @@ function decisionSheetDokoShien(){
 
 //★要トリガー設定：行動支援
 function decisionSheetKodoshien(){
-  //ターゲットとなるスプシを指定
-  for (let j=0; j<connectionJissekiSheetKodoshien_().length; j++){
 
-    //スプシを開く
-    const ss = SpreadsheetApp.openById(connectionJissekiSheetKodoshien_()[j]);
+  if(connectionJissekiSheetKodoshien_().length !==0){
+    //ターゲットとなるスプシを指定
+    for (let j=0; j<connectionJissekiSheetKodoshien_().length; j++){
 
-    //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
-    const sheetList = ss.getSheets();
+      //スプシを開く
+      const ss = SpreadsheetApp.openById(connectionJissekiSheetKodoshien_()[j]);
 
-    //DBから取得したサービス区分を参照
-    for (let k=0;k<inputDbDataKodoshien_().length;k++){
-   
-      //DBのサービス区分に該当するシートを開く
-      const dbServiceName = inputDbDataKodoshien_()[k][8];
-      //Logger.log(dbServiceName)//重度訪問介護
+      //選択したスプシのシート名を取得して実績票（翌月＋該当サービス区分）を取り出す
+      const sheetList = ss.getSheets();
 
-      for (let i=0; i<sheetList.length;i++){
-        const sheetName = sheetList[i].getName();
-        if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_行動支援実績票`)){
-          //シート名、サービス日、計画開始時間、サービス開始・終了時間
-          //sheetNameList.push([sheetName,inputDbData_()[k][4],inputDbData_()[k][5],inputDbData_()[k][6],inputDbData_()[k][7]])
-          const sheet = ss.getSheetByName(sheetName);
+      //DBから取得したサービス区分を参照
+      for (let k=0;k<inputDbDataKodoshien_().length;k++){
+    
+        for (let i=0; i<sheetList.length;i++){
+          const sheetName = sheetList[i].getName();
+          if(sheetName.includes(`${nextYearMonth_().year}年${nextYearMonth_().month}月_行動支援実績票`)){
+            //シート名、サービス日、計画開始時間、サービス開始・終了時間
+            const sheet = ss.getSheetByName(sheetName);
 
-          //dbのサービス日と計画開始時間を取得
-          const dbServiceDate = inputDbDataKodoshien_()[k][4].getDate()
-          const dbPlanStartTime = `${inputDbDataKodoshien_()[k][6].getHours()},${inputDbDataKodoshien_()[k][6].getMinutes()}`
-          const dbCancelMessage = inputDbDataKodoshien_()[k][29];
+            //dbのサービス日と計画開始時間を取得
+            const dbServiceDate = inputDbDataKodoshien_()[k][4].getDate()
+            const dbPlanStartTime = `${inputDbDataKodoshien_()[k][6].getHours()},${inputDbDataKodoshien_()[k][6].getMinutes()}`
+            const dbCancelMessage = inputDbDataKodoshien_()[k][29];
 
-          const sheetTimes = sheet.getRange("H11:H41").getValues();
-          const sheetDate = sheet.getRange("B11:B41").getValues();
+            const sheetTimes = sheet.getRange("H11:H41").getValues();
+            const sheetDate = sheet.getRange("B11:B41").getValues();
 
-          for(let l=0;l<sheetTimes.length;l++){
-            if(sheetTimes[l][0]!==""){
-              const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
-              if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
-                sheet.getRange(`T${l+11}`).setValue(inputDbDataKodoshien_()[k][5]);
-                sheet.getRange(`X${l+11}`).setValue(inputDbDataKodoshien_()[k][7]);
-              }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
-                sheet.getRange(`AU${l+11}`).setValue(inputDbDataKodoshien_()[k][29]);
+            for(let l=0;l<sheetTimes.length;l++){
+              if(sheetTimes[l][0]!==""){
+                const sheetTime = `${sheetTimes[l][0].getHours()},${sheetTimes[l][0].getMinutes()}`
+                if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage === ""){
+                  sheet.getRange(`T${l+11}`).setValue(inputDbDataKodoshien_()[k][5]);
+                  sheet.getRange(`X${l+11}`).setValue(inputDbDataKodoshien_()[k][7]);
+                }else if(dbPlanStartTime===sheetTime && dbServiceDate===sheetDate[l][0] && dbCancelMessage !== ""){
+                  sheet.getRange(`AU${l+11}`).setValue(inputDbDataKodoshien_()[k][29]);
+                }
               }
-            }
-          }          
+            }          
+          }
         }
       }
     }
@@ -682,7 +652,6 @@ function calculationTime() {
   //シート内の各シートを参照
   //開始時間終了時間の記載があれば終了-開始時間で計算、キャンセル枠に記載があるもしくは空白の場合は算定しない
 }
-
 
 
 //===============================================
@@ -866,7 +835,12 @@ function formToDatabaseKyotakuJudo_(){
 
   //formの回答者数をリストに格納
   const responses = form.getResponses();
-  const today = new Date().toDateString();
+  const today = new Date()
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate()-1);
+
+  const formattedYesterday = yesterday.toDateString();
+
 
   //複数人回答用のリストを準備
   const answersList=[];
@@ -883,7 +857,7 @@ function formToDatabaseKyotakuJudo_(){
     let answerList = [];
 
 
-    if(timeStamp===today){
+    if(timeStamp===formattedYesterday){
 
       answerList = [timeStamp];
 
@@ -895,7 +869,6 @@ function formToDatabaseKyotakuJudo_(){
         //アイテムの回答を取得
         const answer = itemResponse.getResponse();
 
-        //questionList.push(question)
         answerList.push(answer)
       }
     }else{
@@ -916,7 +889,11 @@ function formToDatabaseKodo_(){
 
   //formの回答者数をリストに格納
   const responses = form.getResponses();
-  const today = new Date().toDateString();
+  const today = new Date()
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate()-1);
+
+  const formattedYesterday = yesterday.toDateString();
 
   //複数人回答用のリストを準備
   const answersList=[];
@@ -932,7 +909,7 @@ function formToDatabaseKodo_(){
 
     let answerList = [];
 
-    if(timeStamp===today){
+    if(timeStamp===formattedYesterday){
 
       answerList = [timeStamp];
 
@@ -944,7 +921,6 @@ function formToDatabaseKodo_(){
         //アイテムの回答を取得
         const answer = itemResponse.getResponse();
 
-        //questionList.push(question)
         answerList.push(answer);
       }
     }else{
@@ -1112,6 +1088,7 @@ function inputDbDataKodoengo_() {
   //サービス日時は4列目
 
   //翌月の年月データを取得
+  //★先月を想定して実施が必要
   const nextMonth = `${nextYearMonth_().year}/${nextYearMonth_().month}`
 
   const valueList =[]
@@ -1130,11 +1107,6 @@ function inputDbDataKodoengo_() {
 
 
 function connectionJissekiSheetKodoengo_(){
-
-  //DB上から利用者IDを取得する(1列目)
-  const userId = inputDbDataKodoengo_()[0][1];
-
-  //Logger.log(userId)
 
   //利用者リストを開く
   const userListSheet = SpreadsheetApp.openById(userIdList).getSheetByName('利用者リスト');
@@ -1200,11 +1172,6 @@ function inputDbDataDokoShien_() {
 //スプシを特定する(IDを渡す)
 function connectionJissekiSheetDokoShien_(){
 
-  //DB上から利用者IDを取得する(1列目)
-  const userId = inputDbDataDokoShien_()[0][1];
-
-  //Logger.log(userId)
-
   //利用者リストを開く
   const userListSheet = SpreadsheetApp.openById(userIdList).getSheetByName('利用者リスト');
 
@@ -1268,11 +1235,6 @@ function inputDbDataKodoshien_() {
 
 //スプシを特定する(IDを渡す)
 function connectionJissekiSheetKodoshien_(){
-
-  //DB上から利用者IDを取得する(1列目)
-  const userId = inputDbDataKodoshien_()[0][1];
-
-  //Logger.log(userId)
 
   //利用者リストを開く
   const userListSheet = SpreadsheetApp.openById(userIdList).getSheetByName('利用者リスト');
