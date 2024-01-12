@@ -74,6 +74,7 @@ function formatSheet(){
 }
 
 //★要トリガー設定：実績記録票への書き出しを行う関数
+//★要トリガー設定：実績記録票への書き出しを行う関数
 function outputData(){
   
   //createNextMonthList関数で翌月の[日付,曜日]リストを取得
@@ -86,10 +87,13 @@ function outputData(){
 
     //計画表のデータを取得(サービス名、曜日、開始、終了時間)
     const inputId =inputUserData_()[i][1];
+
     const inputData = weeklyDataInput_(inputId)//計画表のデータを取り出す
 
     //Logger.log(inputData)
 
+    //idを分割しリストに格納
+    const sepIdList = splitNumber_(inputUserData_()[i][2]);
 
 
     //inputData.length=5(計画表のデータ数)
@@ -113,6 +117,8 @@ function outputData(){
         outputList.push([])
       }
     }
+
+    //Logger.log(outputList)
     // ここで実績票に書き込み  
     // 自動作成したスプレッドシートへ記載する
     // 別途作成したシートに書き出す
@@ -127,30 +133,77 @@ function outputData(){
         if(outputList[y].length !==0){
           //y=2,3,4は分岐
           if(y===2||y===3||y===4){
+
+            //年月
+            outputSheet.getRange(`D2`).setValue(`${nextYearMonth_().year}年${nextYearMonth_().month}月分`);
+
+            //受給者証番号
+            for(let n=0;n<sepIdList.length;n++){
+              const range = outputSheet.getRange(3,8+n);
+              range.setValue(sepIdList[n]);
+            }
+
+            //氏名
+            outputSheet.getRange(`AC3`).setValue(inputUserData_()[i][0]);            
             for(let z=0; z<outputList[y].length;z++){
+              //行動
               //12行目から記載する[C:日付,E:曜日,H:サービス内容,L:開始時間,O:終了時間]
               outputSheet.getRange(`B${11+z}`).setValue(outputList[y][z][0]);
               outputSheet.getRange(`D${11+z}`).setValue(outputList[y][z][1]);
               outputSheet.getRange(`H${11+z}`).setValue(outputList[y][z][3]);
               outputSheet.getRange(`L${11+z}`).setValue(outputList[y][z][4]);
+
+
+
             }
           }else if(y===1){
+            //年月
+            outputSheet.getRange(`F2`).setValue(`${nextYearMonth_().year}年${nextYearMonth_().month}月分`);
+
+            //受給者証番号
+            for(let n=0;n<sepIdList.length;n++){
+              const range = outputSheet.getRange(3,10+n);
+              range.setValue(sepIdList[n]);
+            }
+
+            //氏名
+            outputSheet.getRange(`AH3`).setValue(inputUserData_()[i][0]);
+
+
             for(let z=0; z<outputList[y].length;z++){
+              //重度
               //12行目から記載する[C:日付,E:曜日,H:サービス内容,L:開始時間,O:終了時間]
               outputSheet.getRange(`D${12+z}`).setValue(outputList[y][z][0]);
               outputSheet.getRange(`F${12+z}`).setValue(outputList[y][z][1]);
               outputSheet.getRange(`I${12+z}`).setValue(outputList[y][z][2]);
               outputSheet.getRange(`N${12+z}`).setValue(outputList[y][z][3]);
               outputSheet.getRange(`R${12+z}`).setValue(outputList[y][z][4]);
+
+
             }
            }else if(y===0){
+            //年月
+            outputSheet.getRange(`E2`).setValue(`${nextYearMonth_().year}年${nextYearMonth_().month}月分`);
+
+            //受給者証番号
+            for(let n=0;n<sepIdList.length;n++){
+              const range = outputSheet.getRange(3,9+n);
+              range.setValue(sepIdList[n]);
+            }
+
+            //氏名
+            outputSheet.getRange(`AD3`).setValue(inputUserData_()[i][0]);
+
+
             for(let z=0; z<outputList[y].length;z++){
+              //居宅
               //12行目から記載する[C:日付,E:曜日,H:サービス内容,L:開始時間,O:終了時間]
               outputSheet.getRange(`C${12+z}`).setValue(outputList[y][z][0]);
               outputSheet.getRange(`E${12+z}`).setValue(outputList[y][z][1]);
               outputSheet.getRange(`H${12+z}`).setValue(outputList[y][z][2]);
               outputSheet.getRange(`L${12+z}`).setValue(outputList[y][z][3]);
               outputSheet.getRange(`O${12+z}`).setValue(outputList[y][z][4]);
+
             }
           }
         }
@@ -821,10 +874,19 @@ function inputUserData_(){
 
   //最終行を取得
   const lastRow = sheet.getLastRow();
-  const range = sheet.getRange(2,1,lastRow-1,2);
+  const range = sheet.getRange(2,1,lastRow-1,3);
   const value = range.getValues();
 
   return value;
+}
+
+//受給者証番号を1文字ずつ分解する関数
+function splitNumber_(num){
+  const targetNum = num.toString();
+  
+  const separateNumList = targetNum.split('');
+
+  return separateNumList;
 }
 //--------------------------------
 //機能２
